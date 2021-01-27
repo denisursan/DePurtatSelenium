@@ -7,12 +7,12 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import pages.*;
 import utils.NavigationUtils;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -32,6 +32,7 @@ public class SimpleTests {
     WebDriverWait wait;
     SeparateLInksPage separateLInksPage;
     SocialMediaPages socialMediaPages;
+    DropDownButtons dropDownButtons;
 
 
     @BeforeEach
@@ -47,16 +48,19 @@ public class SimpleTests {
         favouritePage = new FavouritePage(driver);
         separateLInksPage = new SeparateLInksPage(driver);
         socialMediaPages = new SocialMediaPages(driver);
+        dropDownButtons = new DropDownButtons(driver);
         wait = new WebDriverWait(driver, 5);
         driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
         driver.get("https://www.depurtat.ro/");
+
+
     }
 
-     @AfterEach
-     public void tearDown() {
-       driver.quit();
-    }
+    // @AfterEach
+    //public void tearDown() {
+    //   driver.quit();
+    // }
 
     @Test
     @Order(1)
@@ -88,6 +92,7 @@ public class SimpleTests {
         navigationUtils.getAcceptConditions().click();
         loginPage.logOutFromAccount();
         assertTrue(loginPage.checkThatImLogOut());
+
     }
 
     @Test
@@ -197,26 +202,48 @@ public class SimpleTests {
 
     @Test
     @Order(14)
-    public void checkDropDownCategorii() throws InterruptedException {
+    public void checkDropdownContainsSportCategory() throws InterruptedException {
         navigationUtils.getButtonNoutati().click();
-        //  Thread.sleep(3000);
-        //Select dropDownselect = new Select(driver.findElement(By.xpath("//*[@id=\"page_top_box_product_filters_content\"]/div[1]/div/button")));
-        //dropDownselect.selectByVisibleText("Ghete");
-        WebElement categorii = driver.findElement(By.xpath("//*[@id=\"page_top_box_product_filters_content\"]/div[1]/div/button"));
-        categorii.click();
-        Thread.sleep(3000);
-        List<WebElement> elm = driver.findElements(By.xpath("//*[@id=\"page_top_box_cat_cat_content\"]/div[2]/div/ul"));
-        // int s = elm.size();
-        for (int j = 0; j < elm.size(); j++) {
-            System.out.println(elm.get(j).getText());
-            if(elm.get(j).getText().equals("Ghete")){
-                elm.get(j).click();
-//
-            }
-            break;
-        }
+        // extract dropdown element
+        dropDownButtons.accesDropDownButtonCategories();
+        Thread.sleep(2000);
+        WebElement ulElm = driver.findElement(By.xpath("//*[@id=\"page_top_box_cat_cat_content\"]/div[2]/div/ul"));
+        List<WebElement> liElements = ulElm.findElements(By.tagName("li"));
+        WebElement sport = dropDownButtons.findCategoryByText(liElements, "Sport");
+        Thread.sleep(2000);
+        sport.click();
+        WebElement sportElement = driver.findElement(By.xpath("//button[contains(text(),'Sport')]"));
+        Thread.sleep(2000);
+        assertEquals(sportElement.getText().toLowerCase(Locale.ROOT), "Sport".toLowerCase(Locale.ROOT));
     }
 
+    @Test
+    @Order(15)
+    public void checkDropdownContainsGheteCategory() {
+        navigationUtils.getButtonNoutati().click();
+        dropDownButtons.accesDropDownButtonCategories();
+        WebElement ulElm = driver.findElement(By.xpath("//*[@id=\"page_top_box_cat_cat_content\"]/div[2]/div/ul"));
+        List<WebElement> liElements = ulElm.findElements(By.tagName("li"));
+        WebElement ghete = dropDownButtons.findCategoryByText(liElements, "Ghete");
+        ghete.click();
+        WebElement gheteElement = driver.findElement(By.xpath("//button[contains(text(),'Ghete')]"));
+        assertEquals(gheteElement.getText().toLowerCase(Locale.ROOT), "Ghete".toLowerCase(Locale.ROOT));
 
+
+    }
+
+    @Test
+    @Order(16)
+    public void checkDropDownContainssize39(){
+        navigationUtils.getButtonNoutati().click();
+        dropDownButtons.accesDropDownButtonMarime();
+        WebElement ulElm = driver.findElement(By.xpath("//*[@id=\"page_top_box_filter_27884_content\"]/div[2]/div/ul"));
+        List<WebElement> liElements = ulElm.findElements(By.tagName("li"));
+        WebElement size39= dropDownButtons.findCategoryByText(liElements,"39");
+        size39.click();
+    }
 }
+
+
+
 
