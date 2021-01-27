@@ -135,6 +135,7 @@ public class SimpleTests {
         String url = "https://www.depurtat.ro/sport?s=price_desc";
         String actualurl = driver.getCurrentUrl();
         productsPage.orderProductsByPriceDescending();
+
         //de facut un assert
 
 
@@ -234,13 +235,15 @@ public class SimpleTests {
 
     @Test
     @Order(16)
-    public void checkDropDownContainssize39(){
+    public void checkDropDownContainssize39() {
         navigationUtils.getButtonNoutati().click();
         dropDownButtons.accesDropDownButtonMarime();
         WebElement ulElm = driver.findElement(By.xpath("//*[@id=\"page_top_box_filter_27884_content\"]/div[2]/div/ul"));
         List<WebElement> liElements = ulElm.findElements(By.tagName("li"));
-        WebElement size39= dropDownButtons.findCategoryByText(liElements,"39");
+        WebElement size39 = dropDownButtons.findCategoryByText(liElements, "39");
         size39.click();
+        WebElement size39Button = driver.findElement(By.xpath("//button[contains(text(),'39')]"));
+        assertEquals(size39Button.getText(), "39");
     }
 }
 
